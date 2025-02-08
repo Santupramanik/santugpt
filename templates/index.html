@@ -1,1 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SantuGPT Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        input { padding: 10px; width: 70%; }
+        button { padding: 10px; cursor: pointer; }
+        .chat-box { margin-top: 20px; border: 1px solid #ccc; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Welcome to SantuGPT</h1>
+    <form method="POST">
+        <input type="text" name="user_input" placeholder="Ask me something..." required>
+        <button type="submit">Send</button>
+    </form>
+    <div class="chat-box">
+        <p><b>SantuGPT:</b> {{ response }}</p>
+    </div>
+</body>
+</html>
 
