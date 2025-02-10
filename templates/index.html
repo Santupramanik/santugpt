@@ -2,31 +2,70 @@
 <html>
 <head>
     <title>SantuGPT Chatbot</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Add viewport meta tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        /* General Styles */
+        /* General Styles (No changes needed) */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212; /* Dark background */
-            color: #fff; /* White text */
+            background-color: #121212;
+            color: #fff;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden; /* Hide scrollbars if content overflows */
+            overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
+        /* Light Theme Styles (No changes needed) */
+        body.light-mode {
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        body.light-mode h1 { color: #0d47a1; }
+        body.light-mode #chat-container { background-color: #fff; box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); }
+        body.light-mode #chat-log { border-color: #ddd; background-color: #f0f0f0; }
+        body.light-mode #chat-log p:nth-child(odd) { background-color: #fff; }
+        body.light-mode #chat-log b { color: #444; }
+        body.light-mode #user-input { border-color: #ccc; background-color: #fff; color: #333; }
+        body.light-mode button { background-color: #4CAF50; color: white; }
+        body.light-mode button:hover { background-color: #3e8e41; }
+        body.light-mode #clear-chat-button { background-color: #90a4ae; }
+        body.light-mode #clear-chat-button:hover { background-color: #78909c; }
+        body.light-mode .try-out-questions { color: #757575; }
+        body.light-mode .try-out-questions a { color: #1e88e5; background-color: #fff; }
+        body.light-mode .try-out-questions a:hover { color: #42a5f5; background-color: #f0f0f0; }
+
+        /* Hacker Theme Styles (No changes needed) */
+        body.hacker-mode {
+            background-color: #000;
+            color: #00ff00; /* Green text for hacker mode */
+        }
+        body.hacker-mode h1 { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
+        body.hacker-mode #chat-container { background-color: #000; border: 2px solid #00ff00; box-shadow: 0 0 20px #00ff00; }
+        body.hacker-mode #chat-log { border-color: #00ff00; background-color: #000; }
+        body.hacker-mode #chat-log p:nth-child(odd) { background-color: #111; }
+        body.hacker-mode #chat-log b { color: #00ff00; } /* Green username in hacker mode */
+        body.hacker-mode #user-input { border-color: #00ff00; background-color: #111; color: #00ff00; } /* Green input styles */
+        body.hacker-mode button, body.hacker-mode #clear-chat-button { background-color: #00ff00; color: #000; font-weight: bold; } /* Green buttons */
+        body.hacker-mode button:hover, body.hacker-mode #clear-chat-button:hover { background-color: #00c800; }
+        body.hacker-mode .try-out-questions { color: #00cc00; } /* Green try-out questions in hacker mode */
+        body.hacker-mode .try-out-questions a { color: #00ff00; background-color: #111; border: 1px solid #00ff00; } /* Green links with border */
+        body.hacker-mode .try-out-questions a:hover { color: #00ff00; background-color: #222; }
+
+
         #chat-container {
-            width: 90%; /* Adjust width for smaller screens */
-            max-width: 500px; /* Maximum width for larger screens */
-            background-color: #1e1e1e; /* Slightly lighter dark background */
+            width: 90%;
+            max-width: 500px;
+            background-color: #1e1e1e; /* Default Dark Mode Container Background */
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* More pronounced shadow */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
             padding: 20px;
             margin: 20px;
-            animation: fadeIn 0.5s ease-in-out; /* Fade-in animation */
+            animation: fadeIn 0.5s ease-in-out;
         }
 
         @keyframes fadeIn {
@@ -34,31 +73,51 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        h1 {
-            text-align: center;
-            color: #64b5f6; /* Blue heading */
+        /* Title Container and Avatar (No changes needed) */
+        .title-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin-bottom: 20px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Text shadow for emphasis */
         }
 
-        /* Chat Log Styles */
+        h1 {
+            text-align: center;
+            color: #64b5f6; /* Default Dark Mode Heading Color */
+            margin-bottom: 0;
+            margin-right: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        #ai-avatar {
+            width: 30px; /* Adjust avatar size */
+            height: 30px;
+            border-radius: 50%;
+            margin-left: 10px;
+            /* background-color: #a5d6a7;  No need for background color now as we are using image */
+        }
+
+
+        /* Chat Log Styles (Modified for Copy Button) */
         #chat-log {
             height: 300px;
             overflow-y: scroll;
             padding: 10px;
-            border: 1px solid #333; /* Dark border */
+            border: 1px solid #333; /* Default Dark Mode Chat Log Border */
             border-radius: 5px;
             margin-bottom: 10px;
-            background-color: #212121; /* Darker background for chat log */
+            background-color: #212121; /* Default Dark Mode Chat Log Background */
         }
 
         #chat-log p {
             margin: 5px 0;
-            padding: 8px;
-            border-radius: 5px;
+            padding: 10px 15px; /* Increased padding for bubbles */
+            border-radius: 20px; /* Rounded chat bubbles */
             word-break: break-word;
             opacity: 0;
-            animation: slideIn 0.3s ease-out forwards; /* Slide-in animation */
+            animation: slideIn 0.3s ease-out forwards;
+            background-color: #2e2e2e; /* Default Dark Mode Bubble Background */
+            position: relative; /* Position relative for copy button positioning */
         }
 
         @keyframes slideIn {
@@ -67,89 +126,264 @@
         }
 
         #chat-log p:nth-child(odd) {
-            background-color: #2e2e2e; /* Slightly lighter dark background for alternating messages */
+            background-color: #333; /* Slightly darker for user messages */
+            text-align: right; /* Align user messages to the right */
         }
 
         #chat-log b {
             font-weight: bold;
-            color: #a5d6a7; /* Light green for username */
+            color: #a5d6a7; /* Default Dark Mode Username Color */
         }
 
-        /* Input Area Styles */
+        /* Copy Button Styles (No changes needed) */
+        .copy-button {
+            position: absolute;
+            top: 5px; /* Adjust vertical position */
+            right: 5px; /* Adjust horizontal position */
+            background: transparent;
+            border: none;
+            color: #aaa; /* Light gray copy icon color */
+            cursor: pointer;
+            opacity: 0.6; /* Slightly transparent initially */
+            transition: opacity 0.2s ease, color 0.2s ease, background-color 0.2s ease; /* Smooth transition for hover effect */
+            padding: 5px; /* Add some padding */
+            border-radius: 5px; /* Rounded button */
+        }
+
+        .copy-button:hover {
+            opacity: 1; /* Fully opaque on hover */
+            color: #ccc; /* Lighter gray on hover */
+            background-color: #33333350; /* Slightly darker background on hover */
+        }
+
+        .copy-button:active {
+            background-color: #55555550; /* Even darker background on click */
+        }
+
+
+        /* Input Area Styles (No changes needed) */
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
         #user-input {
-            width: 100%;
+            flex-grow: 1;
             padding: 10px;
-            border: 1px solid #555; /* Darker border */
+            border: 1px solid #555; /* Default Dark Mode Input Border */
             border-radius: 5px;
-            margin-bottom: 10px;
             box-sizing: border-box;
-            background-color: #333; /* Dark input background */
-            color: #fff; /* White input text */
+            background-color: #333; /* Default Dark Mode Input Background */
+            color: #fff; /* Default Dark Mode Input Text Color */
         }
 
-        button {
-            background-color: #43a047; /* Darker green button */
+        button, #clear-chat-button {
+            background-color: #43a047; /* Default Green Button */
             color: white;
             padding: 10px 15px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.1s ease; /* Transition for hover and click effects */
+            transition: background-color 0.3s ease, transform 0.1s ease;
         }
 
         button:hover {
-            background-color: #2e7d32; /* Even darker green on hover */
+            background-color: #2e7d32;
         }
 
         button:active {
-            transform: scale(0.95); /* Slight scale-down on click */
+            transform: scale(0.95);
         }
 
-        /* Error Message Style */
+        #clear-chat-button {
+            background-color: #607d8b; /* Default Grayish Blue Clear Button */
+        }
+
+        #clear-chat-button:hover {
+            background-color: #455a64;
+        }
+
+        /* Error Message Style (No changes needed) */
         .error {
-            color: #f44336; /* Red error color */
+            color: #f44336;
             font-style: italic;
         }
 
-        /* Media Queries for Responsiveness */
+        /* Try Out Questions Style (No changes needed) */
+        .try-out-questions {
+            text-align: center;
+            margin-top: 10px;
+            color: #9e9e9e; /* Default Dark Mode Try Out Questions Color */
+        }
+
+        .try-out-questions p {
+            margin-bottom: 5px;
+        }
+
+        .try-out-questions a {
+            color: #81d4fa; /* Default Dark Mode Link Color */
+            text-decoration: none;
+            margin: 0 10px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-color: #212121; /* Default Dark Mode Link Background */
+        }
+
+        .try-out-questions a:hover {
+            color: #b3e5fc;
+            background-color: #333;
+        }
+
+
+        /* Theme Switcher Styles (No changes needed) */
+        .theme-switcher {
+            position: fixed; /* Fixed position at the top right */
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-button.light { background-color: #eee; color: #333; }
+        .theme-button.light:hover { background-color: #ddd; }
+        .theme-button.dark { background-color: #333; color: white; }
+        .theme-button.dark:hover { background-color: #444; }
+        .theme-button.hacker { background-color: #00ff00; color: #000; font-weight: bold; }
+        .theme-button.hacker:hover { background-color: #00c800; }
+
+
+        /* Media Queries for Responsiveness (No changes needed) */
         @media (max-width: 768px) {
             #chat-container {
-                width: 95%; /* Further reduce width on smaller screens */
-                margin: 10px; /* Reduce margin on smaller screens */
+                width: 95%;
+                margin: 10px;
             }
 
             #chat-log {
-                height: 200px; /* Reduce height on smaller screens */
+                height: 200px;
+            }
+
+            .input-area {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            button, #clear-chat-button {
+                width: 100%;
             }
         }
 
         @media (max-width: 480px) {
             h1 {
-                font-size: 24px; /* Reduce heading font size on very small screens */
+                font-size: 24px;
             }
 
-            button {
-                padding: 8px 12px; /* Reduce button padding on very small screens */
+            button, #clear-chat-button {
+                padding: 8px 12px;
                 font-size: 14px;
             }
         }
     </style>
 </head>
-<body>
+<body class="dark-mode"> <!-- Default theme is dark-mode -->
+
+    <div class="theme-switcher">
+        <button class="theme-button light" onclick="setTheme('light-mode')">Light</button>
+        <button class="theme-button dark" onclick="setTheme('dark-mode')">Dark</button>
+        <button class="theme-button hacker" onclick="setTheme('hacker-mode')">Hacker</button>
+    </div>
+
     <div id="chat-container">
-        <h1>SantuGPT</h1>
+        <div class="title-container">
+            <h1>SantuGPT</h1>
+            <img id="ai-avatar" src="https://tinyurl.com/santugptpic" alt="SantuGPT Avatar">
+        </div>
         <div id="chat-log"></div>
-        <input type="text" id="user-input" placeholder="Type your message...">
-        <button onclick="sendMessage()">Send"></button>
+        <audio id="message-sound" preload="auto" src="{{ url_for('static', filename='message-sound.mp3') }}"></audio>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+            <button id="clear-chat-button" onclick="clearChat()">Clear Chat</button>
+        </div>
+
+        <div class="try-out-questions" id="try-out-questions">
+            <p>Try asking me:</p>
+            <div id="question-links-container">
+                <!-- Question links will be dynamically added here -->
+            </div>
+        </div>
     </div>
 
     <script>
+        const aiAvatar = document.getElementById('ai-avatar');
+        const messageSound = document.getElementById('message-sound'); // Get audio element
+
+        const allQuestions = [
+            "How do you work as a chatbot?🤖",
+            "Tell me a joke.",
+            "Give me a dare to do right now!😈",
+            "How can I impress my crush?😍💘",
+            "Explain quantum physics simply.⚛️",
+            "Can you make me a funny meme idea?",
+            "What is the capital of France?",
+            "Recommend a good movie to watch.",
+            "Can AI feel emotions?🤔❤️",
+            "Tell me an interesting fact."
+        ];
+
+        const alwaysIncludeQuestion = "Did Elon Musk secretly design you?";
+
+        function getRandomQuestions(numQuestions) {
+            const availableQuestions = [...allQuestions];
+            const randomQuestions = [];
+
+            for (let i = 0; i < numQuestions; i++) {
+                if (availableQuestions.length === 0) break;
+                const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+                randomQuestions.push(availableQuestions.splice(randomIndex, 1)[0]);
+            }
+            return randomQuestions;
+        }
+
+        function setTryOutQuestions() {
+            const questionLinksContainer = document.getElementById("question-links-container");
+            questionLinksContainer.innerHTML = '';
+
+            const alwaysIncludeLink = document.createElement('a');
+            alwaysIncludeLink.textContent = alwaysIncludeQuestion;
+            alwaysIncludeLink.onclick = () => setQuestion(alwaysIncludeQuestion);
+            questionLinksContainer.appendChild(alwaysIncludeLink);
+
+            const randomTwoQuestions = getRandomQuestions(2);
+
+            randomTwoQuestions.forEach(question => {
+                const questionLink = document.createElement('a');
+                questionLink.textContent = question;
+                questionLink.onclick = () => setQuestion(question);
+                questionLinksContainer.appendChild(questionLink);
+            });
+        }
+
+
         function sendMessage() {
             const userInput = document.getElementById("user-input").value;
             const chatLog = document.getElementById("chat-log");
 
             // Display user message
-            chatLog.innerHTML += `<p><b>You:</b> ${userInput}</p>`;
+            chatLog.innerHTML += `<p style="text-align: right;"><b>You:</b> ${userInput}</p>`;
 
             // Send message to Flask backend
             fetch('/ask', {
@@ -161,24 +395,63 @@
             })
             .then(response => response.json())
             .then(data => {
+
+
                 if (data.error) {
                     chatLog.innerHTML += `<p class="error"><b>Error:</b> ${data.error}</p>`;
                 } else {
-                    chatLog.innerHTML += `<p><b>SantuGPT:</b> ${data.response}</p>`;
+                    const responseText = data.response;
+                    const messageHTML = `<p><b>SantuGPT:</b> ${responseText}  <button class="copy-button" onclick="copyToClipboard(this, '${encodeURIComponent(responseText)}')">📋</button></p>`;
+                    chatLog.innerHTML += messageHTML;
+                    messageSound.play(); // Play sound effect on new message
                 }
-                chatLog.scrollTop = chatLog.scrollHeight; // Scroll to bottom
+                chatLog.scrollTop = chatLog.scrollHeight;
                 // Animate new message appearance
                 const newMessage = chatLog.lastElementChild;
                 newMessage.style.opacity = 0;
                 newMessage.animate({ opacity: 1 }, { duration: 300, fill: 'forwards' });
+
+                setTryOutQuestions();
             })
             .catch(error => {
                 console.error('Error:', error);
                 chatLog.innerHTML += `<p class="error"><b>Error:</b> ${error}</p>`;
             });
 
-            document.getElementById("user-input").value = ''; // Clear input
+            document.getElementById("user-input").value = '';
         }
+
+        function clearChat() {
+            const chatLog = document.getElementById("chat-log");
+            chatLog.innerHTML = '';
+            setTryOutQuestions();
+        }
+
+        function setQuestion(question) {
+            document.getElementById("user-input").value = question;
+            sendMessage();
+        }
+
+        function setTheme(themeClass) {
+            document.body.className = themeClass; // Set body class to change theme
+        }
+
+        function copyToClipboard(buttonElement, text) {
+            navigator.clipboard.writeText(decodeURIComponent(text)).then(() => {
+                // Optional: Provide visual feedback to the user (e.g., tooltip or change button icon)
+                buttonElement.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    buttonElement.textContent = '📋'; // Reset button text after a short delay
+                }, 1500); // Reset after 1.5 seconds
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                // Optional: Display error message to the user
+                alert('Copy to clipboard failed.');
+            });
+        }
+
+
+        window.onload = setTryOutQuestions;
     </script>
 </body>
 </html>
