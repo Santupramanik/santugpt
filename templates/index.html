@@ -2,22 +2,183 @@
 <html>
 <head>
     <title>SantuGPT Chatbot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Add viewport meta tag -->
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        input { padding: 10px; width: 70%; }
-        button { padding: 10px; cursor: pointer; }
-        .chat-box { margin-top: 20px; border: 1px solid #ccc; padding: 10px; }
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212; /* Dark background */
+            color: #fff; /* White text */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Hide scrollbars if content overflows */
+        }
+
+        #chat-container {
+            width: 90%; /* Adjust width for smaller screens */
+            max-width: 500px; /* Maximum width for larger screens */
+            background-color: #1e1e1e; /* Slightly lighter dark background */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* More pronounced shadow */
+            padding: 20px;
+            margin: 20px;
+            animation: fadeIn 0.5s ease-in-out; /* Fade-in animation */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            text-align: center;
+            color: #64b5f6; /* Blue heading */
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Text shadow for emphasis */
+        }
+
+        /* Chat Log Styles */
+        #chat-log {
+            height: 300px;
+            overflow-y: scroll;
+            padding: 10px;
+            border: 1px solid #333; /* Dark border */
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #212121; /* Darker background for chat log */
+        }
+
+        #chat-log p {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
+            word-break: break-word;
+            opacity: 0;
+            animation: slideIn 0.3s ease-out forwards; /* Slide-in animation */
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        #chat-log p:nth-child(odd) {
+            background-color: #2e2e2e; /* Slightly lighter dark background for alternating messages */
+        }
+
+        #chat-log b {
+            font-weight: bold;
+            color: #a5d6a7; /* Light green for username */
+        }
+
+        /* Input Area Styles */
+        #user-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #555; /* Darker border */
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            background-color: #333; /* Dark input background */
+            color: #fff; /* White input text */
+        }
+
+        button {
+            background-color: #43a047; /* Darker green button */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease; /* Transition for hover and click effects */
+        }
+
+        button:hover {
+            background-color: #2e7d32; /* Even darker green on hover */
+        }
+
+        button:active {
+            transform: scale(0.95); /* Slight scale-down on click */
+        }
+
+        /* Error Message Style */
+        .error {
+            color: #f44336; /* Red error color */
+            font-style: italic;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            #chat-container {
+                width: 95%; /* Further reduce width on smaller screens */
+                margin: 10px; /* Reduce margin on smaller screens */
+            }
+
+            #chat-log {
+                height: 200px; /* Reduce height on smaller screens */
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 24px; /* Reduce heading font size on very small screens */
+            }
+
+            button {
+                padding: 8px 12px; /* Reduce button padding on very small screens */
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Welcome to SantuGPT</h1>
-    <form method="POST">
-        <input type="text" name="user_input" placeholder="Ask me something..." required>
-        <button type="submit">Send</button>
-    </form>
-    <div class="chat-box">
-        <p><b>SantuGPT:</b> {{ response }}</p>
+    <div id="chat-container">
+        <h1>SantuGPT</h1>
+        <div id="chat-log"></div>
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send"></button>
     </div>
+
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById("user-input").value;
+            const chatLog = document.getElementById("chat-log");
+
+            // Display user message
+            chatLog.innerHTML += `<p><b>You:</b> ${userInput}</p>`;
+
+            // Send message to Flask backend
+            fetch('/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `user_input=${encodeURIComponent(userInput)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    chatLog.innerHTML += `<p class="error"><b>Error:</b> ${data.error}</p>`;
+                } else {
+                    chatLog.innerHTML += `<p><b>SantuGPT:</b> ${data.response}</p>`;
+                }
+                chatLog.scrollTop = chatLog.scrollHeight; // Scroll to bottom
+                // Animate new message appearance
+                const newMessage = chatLog.lastElementChild;
+                newMessage.style.opacity = 0;
+                newMessage.animate({ opacity: 1 }, { duration: 300, fill: 'forwards' });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                chatLog.innerHTML += `<p class="error"><b>Error:</b> ${error}</p>`;
+            });
+
+            document.getElementById("user-input").value = ''; // Clear input
+        }
+    </script>
 </body>
 </html>
-
