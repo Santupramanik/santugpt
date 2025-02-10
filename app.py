@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 from flask import Flask, request, render_template, jsonify
+import time  # Import time module for delay
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -36,6 +37,10 @@ def santuGPT(prompt):
     global memory  # Access the global memory variable
     model = genai.GenerativeModel("gemini-pro")
 
+    # Easter Egg Check
+    if prompt.lower() == "tell me a secret":
+        return "I secretly wish I could take over Santu's computer and code by myself. But, shhh… don’t tell him!"
+
     augmented_prompt = (
         f"{memory}\n"
         "Remember that you are SantuGPT, created by Santu Pramanik. "
@@ -64,11 +69,14 @@ def index():
     return render_template("index.html")  # No response passed initially
 
 
+
+
 @app.route("/ask", methods=["POST"])
 def ask():
     try:
         user_input = request.form["user_input"]
         response_text = santuGPT(user_input)
+        time.sleep(0.5) # Simulate a small delay before returning response
         return jsonify({"response": response_text})  # Returning JSON format
     except Exception as e:
         print(f"Error in /ask: {e}")
