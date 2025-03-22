@@ -35,7 +35,7 @@ memory = load_memory()  # Load memory at application startup
 
 def santuGPT(prompt):
     global memory  # Access the global memory variable
-    model = genai.GenerativeModel("gemini-pro")
+    model = genai.GenerativeModel("gemini-2.0-flash")
 
     # Easter Egg Check
     if prompt.lower() == "tell me a secret":
