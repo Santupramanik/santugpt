@@ -1,0 +1,388 @@
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #121212;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light Theme Styles */
+body.light-mode {
+    background-color: #f9f9f9;
+    color: #333;
+}
+body.light-mode h1 { color: #0d47a1; }
+body.light-mode #chat-container { background-color: #fff; box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); }
+body.light-mode #chat-log { border-color: #ddd; background-color: #f5f5f5; }
+body.light-mode #chat-log p:nth-child(odd) { background-color: #f0f0f0; }
+body.light-mode #chat-log p:nth-child(even) { background-color: #e3f2fd; } /* SantuGPT replies - light blue */
+body.light-mode #chat-log b { color: #1976d2; } /* Changed to dark blue for better readability */
+body.light-mode #user-input { border-color: #ccc; background-color: #fff; color: #333; }
+body.light-mode button { background-color: #4CAF50; color: white; }
+body.light-mode button:hover { background-color: #3e8e41; }
+body.light-mode #clear-chat-button { background-color: #90a4ae; }
+body.light-mode #clear-chat-button:hover { background-color: #78909c; }
+body.light-mode .try-out-questions { color: #757575; }
+body.light-mode .try-out-questions a { color: #1e88e5; background-color: #fff; }
+body.light-mode .try-out-questions a:hover { color: #42a5f5; background-color: #f0f0f0; }
+body.light-mode strong { color: #0d47a1; font-weight: bold; } /* Bold text styling */
+
+/* Hacker Theme Styles */
+body.hacker-mode {
+    background-color: #000;
+    color: #00ff00;
+}
+body.hacker-mode h1 { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
+body.hacker-mode #chat-container { background-color: #000; border: 2px solid #00ff00; box-shadow: 0 0 20px #00ff00; }
+body.hacker-mode #chat-log { border-color: #00ff00; background-color: #001500; }
+body.hacker-mode #chat-log p:nth-child(odd) { background-color: #001a00; } /* User messages */
+body.hacker-mode #chat-log p:nth-child(even) { background-color: #003000; } /* SantuGPT messages - darker green bg */
+body.hacker-mode #chat-log b { color: #00ff00; font-weight: bold; text-shadow: 0 0 5px #00ff00; }
+body.hacker-mode #user-input { border-color: #00ff00; background-color: #111; color: #00ff00; }
+body.hacker-mode button, body.hacker-mode #clear-chat-button { background-color: #00ff00; color: #000; font-weight: bold; }
+body.hacker-mode button:hover, body.hacker-mode #clear-chat-button:hover { background-color: #00c800; }
+body.hacker-mode .try-out-questions { color: #00cc00; }
+body.hacker-mode .try-out-questions a { color: #00ff00; background-color: #111; border: 1px solid #00ff00; }
+body.hacker-mode .try-out-questions a:hover { color: #00ff00; background-color: #222; }
+body.hacker-mode strong { color: #00ffff; font-weight: bold; text-shadow: 0 0 5px #00ffff; } /* Bold text styling */
+
+#chat-container {
+    width: 90%;
+    max-width: 500px;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    margin: 20px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.title-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #64b5f6;
+    margin-bottom: 0;
+    margin-right: 10px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.5s ease;
+}
+
+/* Glow animation for the heading when AI is thinking */
+@keyframes glowing {
+    0% { text-shadow: 0 0 5px rgba(100, 181, 246, 0.5), 0 0 10px rgba(100, 181, 246, 0.5); }
+    50% { text-shadow: 0 0 20px rgba(100, 181, 246, 0.8), 0 0 30px rgba(100, 181, 246, 0.8); }
+    100% { text-shadow: 0 0 5px rgba(100, 181, 246, 0.5), 0 0 10px rgba(100, 181, 246, 0.5); }
+}
+
+h1.thinking {
+    animation: glowing 1.5s infinite;
+    color: #90caf9;
+}
+
+/* Theme-specific glow effects */
+body.light-mode h1.thinking {
+    color: #2196f3;
+    animation: glowing 1.5s infinite;
+}
+
+body.hacker-mode h1.thinking {
+    color: #00ff00;
+    animation: glowing 1.5s infinite;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5), 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+#ai-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-left: 10px;
+}
+
+#chat-log {
+    height: 300px;
+    overflow-y: scroll;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #212121;
+}
+
+#chat-log p {
+    margin: 5px 0;
+    padding: 10px 15px;
+    border-radius: 20px;
+    word-break: break-word;
+    opacity: 0;
+    animation: slideIn 0.3s ease-out forwards;
+    position: relative;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+#chat-log p:nth-child(odd) {
+    background-color: #333;
+    text-align: left;
+}
+
+#chat-log p:nth-child(even) {
+    background-color: #537d8c;
+}
+
+#chat-log b {
+    font-weight: bold;
+    color: #a5d6a7;
+}
+
+.copy-button {
+    cursor: pointer;
+    padding: 2px 6px;
+    margin-left: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 3px;
+    color: #ccc;
+    font-size: 0.8em;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.copy-button:hover {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.input-area {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#user-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #555;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background-color: #333;
+    color: #fff;
+}
+
+button, #clear-chat-button {
+    background-color: #43a047;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+button:hover {
+    background-color: #2e7d32;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+#clear-chat-button {
+    background-color: #607d8b;
+}
+
+#clear-chat-button:hover {
+    background-color: #455a64;
+}
+
+.error {
+    color: #f44336;
+    font-style: italic;
+}
+
+.try-out-questions {
+    text-align: center;
+    margin-top: 10px;
+    color: #9e9e9e;
+}
+
+.try-out-questions p {
+    margin-bottom: 5px;
+}
+
+.try-out-questions a {
+    color: #81d4fa;
+    text-decoration: none;
+    margin: 0 10px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: #212121;
+}
+
+.try-out-questions a:hover {
+    color: #b3e5fc;
+    background-color: #333;
+}
+
+.theme-switcher {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.theme-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.theme-button.light { background-color: #eee; color: #333; }
+.theme-button.light:hover { background-color: #ddd; }
+.theme-button.dark { background-color: #333; color: white; }
+.theme-button.dark:hover { background-color: #444; }
+.theme-button.hacker { background-color: #00ff00; color: #000; font-weight: bold; }
+.theme-button.hacker:hover { background-color: #00c800; }
+
+/* Conversation Mode Buttons */
+.mode-switcher {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.mode-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+.mode-button.active {
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.mode-button.normal {
+    background-color: #7289da;
+    color: white;
+}
+
+.mode-button.normal:hover {
+    background-color: #5f73bc;
+}
+
+.mode-button.friendly {
+    background-color: #ff92a4;
+    color: white;
+}
+
+.mode-button.friendly:hover {
+    background-color: #e57f8f;
+}
+
+.mode-button.funny {
+    background-color: #ffcb4c;
+    color: #333;
+}
+
+.mode-button.funny:hover {
+    background-color: #edb93a;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+        min-height: auto;
+        overflow: auto;
+    }
+    
+    #chat-container {
+        width: 95%;
+        margin: 60px auto 10px auto;
+        padding: 10px;
+    }
+    
+    #chat-log {
+        height: 250px;
+    }
+    
+    .input-area {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    button, #clear-chat-button {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    .theme-switcher, .mode-switcher {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        margin: 0;
+        padding: 5px;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 100;
+        width: 100%;
+    }
+    
+    .theme-switcher {
+        top: 0;
+    }
+    
+    .mode-switcher {
+        top: 30px;
+    }
+    
+    .theme-button, .mode-button {
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 24px;
+    }
+    button, #clear-chat-button {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+}
